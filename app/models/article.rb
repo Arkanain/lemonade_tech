@@ -4,6 +4,8 @@ class Article < ApplicationRecord
 
   scope :with_any_of_terms, ->(terms) { joins(:terms).where(terms: {value: split_terms(terms)}).distinct }
 
+  validates_presence_of :title
+
   def index(terms)
     self.class.split_terms(terms).each do |word|
       self.terms << Term.find_or_create_by(value: word)
@@ -11,6 +13,6 @@ class Article < ApplicationRecord
   end
 
   def self.split_terms(terms)
-    terms.split(/\W/)
+    terms.to_s.split(/\W/)
   end
 end
