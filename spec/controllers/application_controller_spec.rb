@@ -88,6 +88,12 @@ describe ApplicationController do
 
         it { is_expected.to contain_exactly("article2") }
       end
+
+      context "ruby on rails" do
+        let(:query) { "ruby on rails" }
+
+        it { is_expected.to be_empty }
+      end
     end
 
     context "without :query param" do
@@ -98,6 +104,6 @@ describe ApplicationController do
   end
 
   describe 'GET /search_ranked' do
-    # TODO
+
   end
 end
