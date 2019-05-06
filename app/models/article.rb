@@ -11,7 +11,7 @@ class Article < ApplicationRecord
   scope :with_all_of_terms, ->(terms) do
     with_any_of_terms(terms)
       .group(:id)
-      .having("count(terms.id) = ?", split_terms(terms).length)
+      .having("COUNT(terms.id) = ?", split_terms(terms).length)
   end
 
   validates_presence_of :title
