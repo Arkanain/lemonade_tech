@@ -4,13 +4,15 @@ describe ApplicationController do
     let(:body)  { 'hello world' }
 
     context "with article params" do
-      before { post :add_article, params: { title: title, body: body } }
+      let(:article) { Article.take }
 
-      subject(:article) { Article.last }
+      it "create new article" do
+        expect do
+          post :add_article, params: { title: title, body: body }
+        end.to change(Article, :count).by(1)
 
-      specify do
         expect(article.title).to eq(title)
-        expect(article.terms.map(&:value)).to match_array(%w[hello world])
+        expect(article.terms.pluck(:value)).to contain_exactly("hello", "world")
       end
     end
 
@@ -20,13 +22,8 @@ describe ApplicationController do
   end
 
   describe 'GET /search_any_term' do
-    let(:article1) { Article.create(title: 'article1') }
-    let(:article2) { Article.create(title: 'article2') }
-
-    before do
-      article1.index('hello world')
-      article2.index('hello kitty')
-    end
+    let!(:article1) { Article.create(title: 'article1').index('hello world') }
+    let!(:article2) { Article.create(title: 'article2').index('hello kitty') }
 
     subject { JSON.parse(response.body) }
 
@@ -66,7 +63,38 @@ describe ApplicationController do
   end
 
   describe 'GET /search_all_terms' do
+    let!(:article1) { Article.create(title: "article1").index("hello world") }
+    let!(:article2) { Article.create(title: "article2").index("hello kitty") }
 
+    subject { JSON.parse(response.body) }
+
+    context "with :query param" do
+      before { get :search_all_terms, params: { query: query } }
+
+      context "hello" do
+        let(:query) { "hello" }
+
+        it { is_expected.to contain_exactly("article1", "article2") }
+      end
+
+      context "hello world" do
+        let(:query) { "hello world" }
+
+        it { is_expected.to contain_exactly("article1") }
+      end
+
+      context "hello kitty" do
+        let(:query) { "hello kitty" }
+
+        it { is_expected.to contain_exactly("article2") }
+      end
+    end
+
+    context "without :query param" do
+      before { get :search_all_terms }
+
+      it { is_expected.to be_empty }
+    end
   end
 
   describe 'GET /search_ranked' do

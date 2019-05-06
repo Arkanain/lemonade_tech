@@ -11,15 +11,7 @@ class ApplicationController < ActionController::API
 
   # GET "/search_all_terms?query=hello+world"
   def search_all_terms
-    # TODO: Return titles of articles that contain ALL of the words from query.
-    #
-    # E.g:
-    #
-    # Article1 - "hello world"
-    # Article2 - "hello kitty"
-    #
-    # GET "/search_all_terms?query=hello+world" should return only Article1
-    # GET "/search_all_terms?query=hello" should return Article1 and Article2
+    render json: Article.with_all_of_terms(params[:query]).pluck(:title)
   end
 
   def search_ranked
