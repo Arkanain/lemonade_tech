@@ -2,8 +2,17 @@ class Article < ApplicationRecord
   has_many :article_terms
   has_many :terms, through: :article_terms
 
-  scope :with_any_of_terms, ->(terms) { joins(:terms).where(terms: {value: split_terms(terms)}).distinct }
-  scope :with_all_of_terms, ->(terms) {  }
+  scope :with_any_of_terms, ->(terms) do
+    joins(:terms)
+      .where(terms: {value: split_terms(terms)})
+      .distinct
+  end
+
+  scope :with_all_of_terms, ->(terms) do
+    with_any_of_terms(terms)
+      .group(:id)
+      .having("count(terms.id) = ?", split_terms(terms).length)
+  end
 
   validates_presence_of :title
 
