@@ -104,6 +104,31 @@ describe ApplicationController do
   end
 
   describe 'GET /search_ranked' do
+    let!(:article1) { Article.create(title: "article1").index("hello hello kitty") }
+    let!(:article2) { Article.create(title: "article2").index("hello kitty kitty kitty") }
 
+    subject { JSON.parse(response.body) }
+
+    context "with :query param" do
+      before { get :search_ranked, params: { query: query } }
+
+      context "hello" do
+        let(:query) { "hello" }
+
+        it { is_expected.to contain_exactly("article1", "article2") }
+      end
+
+      context "hello kitty" do
+        let(:query) { "hello kitty" }
+
+        it { is_expected.to contain_exactly("article2", "article1") }
+      end
+    end
+
+    context "without :query param" do
+      before { get :search_ranked }
+
+      it { is_expected.to be_empty }
+    end
   end
 end

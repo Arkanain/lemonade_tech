@@ -1,32 +1,32 @@
 class Article < ApplicationRecord
-  has_many :article_terms
+  include Concerns::TermsSplitter
+
+  has_many :article_terms, dependent: :destroy
   has_many :terms, through: :article_terms
 
-  scope :with_any_of_terms, ->(terms) do
-    joins(:terms)
-      .where(terms: {value: split_terms(terms)})
-      .distinct
-  end
-
-  scope :with_all_of_terms, ->(terms) do
-    with_any_of_terms(terms)
-      .group(:id)
-      .having("COUNT(terms.id) = ?", split_terms(terms).length)
-  end
+  scope :filter_by_terms, TermsFilterQuery
 
   validates_presence_of :title
 
-  def index(terms)
-    tap do |article|
-      article.class.split_terms(terms).each do |word|
-        self.terms << Term.find_or_create_by(value: word)
-      end
+  class << self
+    def create_with_terms(title:, body:)
+      new_instance = create(title: title)
+      assign_terms(body) if new_instance.valid?
+      new_instance
     end
   end
 
   private
 
-  def self.split_terms(terms)
-    terms.to_s.split(/\W/)
+  def assign_terms(terms_string)
+    split_terms(terms_string).uniq
   end
+
+  # def save(*args, &block)
+  #   body.each { |word| self.terms << Term.find_or_create_by(value: word) } if super
+  # end
+  #
+  # def body=(terms)
+  #   @body = split_terms(terms).uniq
+  # end
 end
