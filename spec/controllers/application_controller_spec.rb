@@ -19,11 +19,21 @@ describe ApplicationController do
     context "without article params" do
       it { expect { post :add_article }.not_to change(Article, :count) }
     end
+
+    context "with existed title" do
+      before { Article.create_with_terms(title: title, body: body) }
+
+      it "doesn't create article" do
+        expect do
+          post :add_article, params: { title: title, body: body }
+        end.not_to change(Article, :count)
+      end
+    end
   end
 
   describe 'GET /search_any_term' do
-    let!(:article1) { Article.create(title: 'article1').index('hello world') }
-    let!(:article2) { Article.create(title: 'article2').index('hello kitty') }
+    let!(:article1) { Article.create_with_terms(title: 'article1', body: 'hello world') }
+    let!(:article2) { Article.create_with_terms(title: 'article2', body: 'hello kitty') }
 
     subject { JSON.parse(response.body) }
 
@@ -63,8 +73,8 @@ describe ApplicationController do
   end
 
   describe 'GET /search_all_terms' do
-    let!(:article1) { Article.create(title: "article1").index("hello world") }
-    let!(:article2) { Article.create(title: "article2").index("hello kitty") }
+    let!(:article1) { Article.create_with_terms(title: "article1", body: "hello world") }
+    let!(:article2) { Article.create_with_terms(title: "article2", body: "hello kitty") }
 
     subject { JSON.parse(response.body) }
 
@@ -104,8 +114,8 @@ describe ApplicationController do
   end
 
   describe 'GET /search_ranked' do
-    let!(:article1) { Article.create(title: "article1").index("hello hello kitty") }
-    let!(:article2) { Article.create(title: "article2").index("hello kitty kitty kitty") }
+    let!(:article1) { Article.create_with_terms(title: "article1", body: "hello hello kitty") }
+    let!(:article2) { Article.create_with_terms(title: "article2", body: "hello kitty kitty kitty") }
 
     subject { JSON.parse(response.body) }
 
