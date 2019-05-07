@@ -20,16 +20,11 @@ class TermsFilterQuery
     private
 
     def with_any_terms
-      Article.all
-        .joins(:terms)
-        .where(terms: {value: terms})
-        .distinct
+      Article.joins(:terms).where(terms: {value: terms}).distinct
     end
 
     def with_all_terms
-      with_any_terms
-        .group(:id)
-        .having("COUNT(terms.id) = ?", terms.length)
+      with_any_terms.group(:id).having("COUNT(terms.id) = ?", terms.length)
     end
 
     def with_ranked_terms
