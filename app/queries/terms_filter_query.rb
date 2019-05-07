@@ -27,6 +27,7 @@ class TermsFilterQuery
       with_any_terms.group(:id).having("COUNT(terms.id) = ?", terms.length)
     end
 
+    # TODO: This part is not finished
     def with_ranked_terms
       with_all_terms
     end

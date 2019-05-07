@@ -72,7 +72,7 @@ describe ApplicationController do
     end
   end
 
-  describe 'GET /search_all_terms' do
+  describe "GET /search_all_terms" do
     let!(:article1) { Article.create_with_terms(title: "article1", body: "hello world") }
     let!(:article2) { Article.create_with_terms(title: "article2", body: "hello kitty") }
 
@@ -113,7 +113,7 @@ describe ApplicationController do
     end
   end
 
-  describe 'GET /search_ranked' do
+  describe "GET /search_ranked" do
     let!(:article1) { Article.create_with_terms(title: "article1", body: "hello hello kitty") }
     let!(:article2) { Article.create_with_terms(title: "article2", body: "hello kitty kitty kitty") }
 
