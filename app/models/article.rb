@@ -17,8 +17,7 @@ class Article < ApplicationRecord
   end
 
   def assign_terms(terms_string)
-    terms_arr = split_terms(terms_string).uniq
-    self.terms = terms_arr.map do |term|
+    self.terms = split_terms(terms_string).map do |term|
       Term.find_or_create_by(value: term)
     end
   end
