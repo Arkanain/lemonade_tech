@@ -6,24 +6,21 @@ class Article < ApplicationRecord
 
   accepts_nested_attributes_for :article_terms
 
-  scope :filter_by_terms, TermsFilterQuery
-
   validates :title, presence: true, uniqueness: true
 
-  class << self
-    def create_with_terms(attrs)
-      create(
-        title: attrs[:title],
-        article_terms_attributes: parse_terms(attrs[:body])
-      )
-    end
+  scope :with_any_terms, ->(terms) do
+    joins(:terms)
+      .where(terms: {value: splitted_terms(terms)})
+      .distinct
+  end
 
-    private
+  scope :with_all_terms, ->(terms) do
+    with_any_terms(terms)
+      .group(:id)
+      .having("COUNT(terms.id) = ?", splitted_terms(terms).length)
+  end
 
-    def parse_terms(terms_string)
-      split_terms(terms_string).map do |term|
-        {term: Term.find_or_create_by(value: term)}
-      end
-    end
+  scope :with_ranked_terms, ->(terms) do
+    with_all_terms(terms)
   end
 end

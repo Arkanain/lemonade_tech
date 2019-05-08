@@ -21,7 +21,7 @@ describe ApplicationController do
     end
 
     context "with existed title" do
-      before { Article.create_with_terms(title: title, body: body) }
+      before { CreateArticleWithTerms.new(title: title, body: body) }
 
       it "doesn't create article" do
         expect do
@@ -32,8 +32,8 @@ describe ApplicationController do
   end
 
   describe 'GET /search_any_term' do
-    let!(:article1) { Article.create_with_terms(title: 'article1', body: 'hello world') }
-    let!(:article2) { Article.create_with_terms(title: 'article2', body: 'hello kitty') }
+    let!(:article1) { CreateArticleWithTerms.new(title: 'article1', body: 'hello world') }
+    let!(:article2) { CreateArticleWithTerms.new(title: 'article2', body: 'hello kitty') }
 
     subject { JSON.parse(response.body) }
 
@@ -73,8 +73,8 @@ describe ApplicationController do
   end
 
   describe "GET /search_all_terms" do
-    let!(:article1) { Article.create_with_terms(title: "article1", body: "hello world") }
-    let!(:article2) { Article.create_with_terms(title: "article2", body: "hello kitty") }
+    let!(:article1) { CreateArticleWithTerms.new(title: "article1", body: "hello world") }
+    let!(:article2) { CreateArticleWithTerms.new(title: "article2", body: "hello kitty") }
 
     subject { JSON.parse(response.body) }
 
@@ -114,8 +114,8 @@ describe ApplicationController do
   end
 
   describe "GET /search_ranked" do
-    let!(:article1) { Article.create_with_terms(title: "article1", body: "hello hello kitty") }
-    let!(:article2) { Article.create_with_terms(title: "article2", body: "hello kitty kitty kitty") }
+    let!(:article1) { CreateArticleWithTerms.new(title: "article1", body: "hello hello kitty") }
+    let!(:article2) { CreateArticleWithTerms.new(title: "article2", body: "hello kitty kitty kitty") }
 
     subject { JSON.parse(response.body) }
 
@@ -125,13 +125,13 @@ describe ApplicationController do
       context "hello" do
         let(:query) { "hello" }
 
-        # it { is_expected.to contain_exactly("article1", "article2") }
+        it { is_expected.to contain_exactly("article1", "article2") }
       end
 
       context "hello kitty" do
         let(:query) { "hello kitty" }
 
-        # it { is_expected.to contain_exactly("article2", "article1") }
+        it { is_expected.to contain_exactly("article2", "article1") }
       end
     end
 
