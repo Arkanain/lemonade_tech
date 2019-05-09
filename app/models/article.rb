@@ -23,7 +23,7 @@ class Article < ApplicationRecord
   scope :with_ranked_terms, ->(terms) do
     with_any_terms(terms)
       .group(:id)
-      .select("articles.*, sum(article_terms.count) as terms_count")
+      .select("articles.*, SUM(article_terms.count) as terms_count")
       .order("terms_count DESC")
   end
 end
