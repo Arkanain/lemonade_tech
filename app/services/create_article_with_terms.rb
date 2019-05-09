@@ -18,7 +18,7 @@ class CreateArticleWithTerms
   attr_reader :attrs
 
   # Terms parsing steps:
-  # 
+  #
   # "hello hello" =>
   #   ["hello", "hello"] =>
   #     {"hello" => {term: #<Term value: "hello">, count: 2}} =>
