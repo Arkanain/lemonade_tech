@@ -9,7 +9,7 @@ class Article < ApplicationRecord
   validates :title, presence: true, uniqueness: true
 
   scope :with_any_terms, ->(terms) do
-    joins(:terms)
+    joins(article_terms: :term)
       .where(terms: {value: splitted_terms(terms)})
       .distinct
   end
@@ -21,6 +21,9 @@ class Article < ApplicationRecord
   end
 
   scope :with_ranked_terms, ->(terms) do
-    with_all_terms(terms)
+    with_any_terms(terms)
+      .group(:id)
+      .select("articles.*, sum(article_terms.count) as terms_count")
+      .order("terms_count DESC")
   end
 end

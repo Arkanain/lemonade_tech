@@ -10,11 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_29_104355) do
+ActiveRecord::Schema.define(version: 2019_05_08_224002) do
 
   create_table "article_terms", force: :cascade do |t|
     t.integer "article_id"
     t.integer "term_id"
+    t.integer "count", default: 0
     t.index ["article_id"], name: "index_article_terms_on_article_id"
     t.index ["term_id"], name: "index_article_terms_on_term_id"
   end
